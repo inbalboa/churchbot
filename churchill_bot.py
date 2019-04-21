@@ -15,7 +15,7 @@ def read_config() -> tuple:
     search_query = os.environ.get('search_query', None)
     status_text = os.environ.get('status_text', None)
     
-    return consumer_key, consumer_secret, access_token_key, access_token_secret, log_path, state_file, search_query, status_text
+    return consumer_key, consumer_secret, access_token_key, access_token_secret, search_query, status_text
 
 def get_logger(log_path: str=None, verbose: bool=True):
     handlers = [logging.StreamHandler(sys.stdout)]
@@ -41,7 +41,7 @@ def check_phrase(phrase: str) -> bool:
     return True
 
 def main():
-    consumer_key, consumer_secret, access_token_key, access_token_secret, log_path, state_file, search_query, status_text = read_config()
+    consumer_key, consumer_secret, access_token_key, access_token_secret, search_query, status_text = read_config()
     
     logger = get_logger()
     api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
