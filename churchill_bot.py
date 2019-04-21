@@ -32,7 +32,7 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
 
-def get_last_id() -> str:
+def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
     return last_tweets[0].in_reply_to_status_id_str if len(last_tweets) else '1119952223906217984'
 
@@ -46,7 +46,7 @@ def main():
     api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
 
     while True:
-        tweet_id = get_last_id()
+        tweet_id = get_last_id(api)
         try:
             tweets = sorted(tweepy.Cursor(api.search, q=search_query, tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
