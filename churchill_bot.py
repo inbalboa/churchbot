@@ -7,7 +7,7 @@ import tweepy
 
 app_name = 'church_bot'
 
-def read_config(config_file: str) -> tuple:
+def read_config() -> tuple:
     consumer_key = os.environ.get('consumer_key', None)
     consumer_secret = os.environ.get('consumer_secret', None)
     access_token_key = os.environ.get('access_token_key', None)
