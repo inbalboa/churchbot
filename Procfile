@@ -1,1 +1,1 @@
-web: churchill_bot.py
+web: /app/churchill_bot.py
