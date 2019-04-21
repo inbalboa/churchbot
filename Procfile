@@ -1,1 +1,1 @@
-web: python /app/churchill_bot.py
+worker: python /app/churchill_bot.py
