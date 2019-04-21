@@ -1,0 +1,6 @@
+argparse
+configparser
+logging
+pathlib
+sys
+tweepy
