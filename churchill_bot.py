@@ -31,7 +31,7 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth)
 
-def get_last_id(state_file: str) -> str:
+def get_last_id() -> str:
     return os.environ.get('last_id', '1117855342552133637')
 
 def set_last_id(tweet_id: str):
