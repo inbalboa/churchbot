@@ -3,6 +3,7 @@
 import logging
 import os
 import sys
+import time
 import tweepy
 
 app_name = 'church_bot'
@@ -32,10 +33,8 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
     return tweepy.API(auth)
 
 def get_last_id() -> str:
-    return os.environ.get('last_id', '1117855342552133637')
-
-def set_last_id(tweet_id: str):
-    return os.environ.set(tweet_id)
+    last_tweets = api.home_timeline(count=1)
+    return last_tweets[0].in_reply_to_status_id_str if len(last_tweets) else '1119952223906217984'
 
 def check_phrase(phrase: str) -> bool:
     return True
@@ -46,21 +45,23 @@ def main():
     logger = get_logger()
     api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
 
-    tweet_id = get_last_id()
-    try:
-        tweets = sorted(tweepy.Cursor(api.search, q=search_query, tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
-    except (Exception, tweepy.TweepError) as error:
-        logger.error(error)
-        sys.exit(1)
-
-    for tweet in tweets:
+    while True:
+        tweet_id = get_last_id()
         try:
-            api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
-            set_last_id(tweet.id_str)
-            logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
+            tweets = sorted(tweepy.Cursor(api.search, q=search_query, tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
             logger.error(error)
             sys.exit(1)
+
+        for tweet in tweets:
+            try:
+                api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
+                logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
+            except (Exception, tweepy.TweepError) as error:
+                logger.error(error)
+                sys.exit(1)
+                
+        time.sleep(30)
 
 
 if __name__ == "__main__":
