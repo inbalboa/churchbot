@@ -30,7 +30,7 @@ def get_logger(log_path: str=None, verbose: bool=True):
 def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_token_secret: str):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
-    return tweepy.API(auth)
+    return tweepy.API(auth, wait_on_rate_limit=True)
 
 def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
@@ -43,11 +43,15 @@ def main():
     consumer_key, consumer_secret, access_token_key, access_token_secret, search_query, status_text = read_config()
     
     logger = get_logger()
-    api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
+    try:
+        api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
+    except (Exception, tweepy.TweepError) as error:
+        logger.error(error)
+        sys.exit(1)
 
     while True:
-        tweet_id = get_last_id(api)
         try:
+            tweet_id = get_last_id(api)
             tweets = sorted(tweepy.Cursor(api.search, q=search_query, tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
             logger.error(error)
