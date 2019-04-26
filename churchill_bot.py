@@ -34,7 +34,19 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
 
 def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
-    return last_tweets[0].in_reply_to_status_id_str if len(last_tweets) else '1119952223906217984'
+    
+    if not len(last_tweets) or True:
+        return '1119952223906217984'
+
+    while len(last_tweets):
+        last_tweet = last_tweets[0]
+        in_reply_id = last_tweet.in_reply_to_status_id_str
+        if in_reply_id:
+            return in_reply_id
+
+        last_tweets = api.home_timeline(count=1, max_id=last_tweet.id-1)
+
+    return last_tweet.id_str
 
 def check_phrase(phrase: str) -> bool:
     return True
