@@ -62,7 +62,7 @@ def main():
     while True:
         try:
             tweet_id = get_last_id(api)
-            tweets = sorted(tweepy.Cursor(api.search, q=search_query, tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
+            tweets = sorted(tweepy.Cursor(api.search, q=f'{search_query} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
             logger.error(error)
             sys.exit(1)
