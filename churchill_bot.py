@@ -33,7 +33,7 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
 def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
     
-    if not len(last_tweets) or True:
+    if not len(last_tweets):
         return '1119952223906217984'
 
     while len(last_tweets):
@@ -48,6 +48,13 @@ def get_last_id(api) -> str:
 
 def check_phrase(phrase: str) -> bool:
     return True
+
+def is_tweet_exists(api, tweet_id):
+    try:
+        tweet = api.get_status(tweet_id)
+        return True
+    except (Exception, tweepy.TweepError) as error:
+        return False
 
 def main():
     consumer_key, consumer_secret, access_token_key, access_token_secret, search_query, status_text = read_config()
@@ -69,8 +76,9 @@ def main():
 
         for tweet in tweets:
             try:
-                # api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
-                logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
+                if is_tweet_exists(api, tweet.id):
+                    api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
+                    logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
             except (Exception, tweepy.TweepError) as error:
                 logger.error(error)
                 sys.exit(1)
