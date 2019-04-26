@@ -69,7 +69,7 @@ def main():
 
         for tweet in tweets:
             try:
-                api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
+                # api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
                 logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
             except (Exception, tweepy.TweepError) as error:
                 logger.error(error)
