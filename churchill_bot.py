@@ -6,8 +6,6 @@ import sys
 import time
 import tweepy
 
-app_name = 'church_bot'
-
 def read_config() -> tuple:
     consumer_key = os.environ.get('consumer_key', None)
     consumer_secret = os.environ.get('consumer_secret', None)
@@ -25,7 +23,7 @@ def get_logger(log_path: str=None, verbose: bool=True):
     
     logging.basicConfig(level=logging.INFO if verbose else logging.WARNING, format='%(asctime)s [%(levelname)-5.5s]  %(message)s', handlers=handlers)
     
-    return logging.getLogger(app_name)
+    return logging.getLogger()
 
 def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_token_secret: str):
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
