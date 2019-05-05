@@ -1,6 +1,6 @@
-# churchbot
+# Churchill bot
 
-A Twitter bot to find tweets that match your search terms and reply with prepared response.
+A simple Twitter bot to find tweets that match your search terms and reply with prepared response.
 
 Developed for joking. Don't spam!
 
