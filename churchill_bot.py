@@ -41,7 +41,7 @@ def read_config() -> tuple:
     config = dict()
     
     config['app_name'] = os.environ.get('app_name', sys.argv[0])
-    config['app_fullname'] = os.environ.get('app_fullname', config.app_name)
+    config['app_fullname'] = os.environ.get('app_fullname', config['app_name'])
     
     config['consumer_key'] = os.environ.get('consumer_key', None)
     config['consumer_secret'] = os.environ.get('consumer_secret', None)
@@ -118,10 +118,10 @@ def is_tweet_exists(api, tweet_id) -> bool:
 
 def main():
     config = read_config()    
-    logger = get_logger(mail_address=config.mail_address, mail_password=config.mail_password, app_name=config.app_fullname)
+    logger = get_logger(mail_address=config['mail_address'], mail_password=config['mail_password'], app_name=config['app_fullname'])
 
     try:
-        api = get_api(config.consumer_key, config.consumer_secret, config.access_token_key, config.access_token_secret)
+        api = get_api(config['consumer_key'], config['consumer_secret'], config['access_token_key'], config['access_token_secret'])
     except (Exception, tweepy.TweepError) as error:
         logger.exception("received an error on getting API")
         sys.exit(1)
@@ -129,7 +129,7 @@ def main():
     while True:
         try:
             tweet_id = get_last_id(api)
-            tweets = sorted(tweepy.Cursor(api.search, q=f'{config.search_query} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
+            tweets = sorted(tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
             logger.exception("received an error on getting search results")
             sys.exit(1)
@@ -137,7 +137,7 @@ def main():
         for tweet in tweets:
             try:
                 if is_tweet_exists(api, tweet.id):
-                    api.update_status(f'@{tweet.author.screen_name} {config.status_text}', in_reply_to_status_id=tweet.id_str)
+                    api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
                     logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
             except (Exception, tweepy.TweepError) as error:
                 logger.exception("received an error on trying to reply")
