@@ -37,7 +37,7 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
         except:
             self.handleError(record)
 
-def read_config() -> tuple:
+def read_config() -> dict:
     config = dict()
     
     config['app_name'] = os.environ.get('app_name', sys.argv[0])
@@ -47,14 +47,16 @@ def read_config() -> tuple:
     config['consumer_secret'] = os.environ.get('consumer_secret', None)
     config['access_token_key'] = os.environ.get('access_token_key', None)
     config['access_token_secret'] = os.environ.get('access_token_secret', None)
+    
     config['search_query'] = os.environ.get('search_query', None)
     config['status_text'] = os.environ.get('status_text', None)
+    
     config['mail_address'] = os.environ.get('mail_address', None)
     config['mail_password'] = os.environ.get('mail_password', None)
     
     return config
 
-def get_logger(log_path: str=None, mail_address: str = None, mail_password: str = None, app_name: str = None):
+def get_logger(log_path: str = None, mail_address: str = None, mail_password: str = None, app_name: str = None) -> logging.Logger:
     logger = logging.getLogger(app_name)
     logger.setLevel(logging.DEBUG)
     
@@ -85,7 +87,7 @@ def get_logger(log_path: str=None, mail_address: str = None, mail_password: str 
 
     return logger
 
-def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_token_secret: str):
+def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_token_secret: str) -> tweepy.API:
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_token, access_token_secret)
     return tweepy.API(auth, wait_on_rate_limit=True)
@@ -107,9 +109,10 @@ def get_last_id(api) -> str:
     return last_tweet.id_str
 
 def check_phrase(phrase: str) -> bool:
+    # TODO: smart checking
     return True
 
-def is_tweet_exists(api, tweet_id) -> bool:
+def is_tweet_exists(api: tweepy.API, tweet_id: int) -> bool:
     try:
         tweet = api.get_status(tweet_id)
         return True
@@ -143,7 +146,7 @@ def main():
                 logger.exception("received an error on trying to reply")
                 sys.exit(1)
 
-        time.sleep(30)
+        time.sleep(600)
 
 
 if __name__ == "__main__":
