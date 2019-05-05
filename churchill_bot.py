@@ -63,7 +63,7 @@ def main():
     try:
         api = get_api(consumer_key, consumer_secret, access_token_key, access_token_secret)
     except (Exception, tweepy.TweepError) as error:
-        logger.error(error)
+        logger.exception("received an error on getting API")
         sys.exit(1)
 
     while True:
@@ -71,7 +71,7 @@ def main():
             tweet_id = get_last_id(api)
             tweets = sorted(tweepy.Cursor(api.search, q=f'{search_query} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
-            logger.error(error)
+            logger.exception("received an error on getting search results")
             sys.exit(1)
 
         for tweet in tweets:
@@ -80,9 +80,9 @@ def main():
                     api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
                     logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
             except (Exception, tweepy.TweepError) as error:
-                logger.error(error)
+                logger.exception("received an error on trying to reply")
                 sys.exit(1)
-                
+
         time.sleep(30)
 
 
