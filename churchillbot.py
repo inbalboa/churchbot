@@ -74,13 +74,13 @@ def get_logger(log_path: str = None, mail_address: str = None, mail_password: st
         logger.addHandler(fh)
 
     if mail_address and mail_password:
-        mh1 = TlsSMTPHandler(("smtp.gmail.com", 587), mail_address, (mail_address), '✔️ new reply', (mail_address, mail_password), app_name=app_name)
+        mh1 = TlsSMTPHandler(('smtp.gmail.com', 587), mail_address, (mail_address), '✔️ new reply', (mail_address, mail_password), app_name=app_name)
         mh1.setLevel(logging.INFO)
         mh1.setFormatter(logging.Formatter('%(message)s'))
         mh1.addFilter(type('', (logging.Filter,), {'filter': staticmethod(lambda r: r.levelno == logging.INFO)}))
         logger.addHandler(mh1)
 
-        mh2 = TlsSMTPHandler(("smtp.gmail.com", 587), mail_address, (mail_address), '⚠️ error found', (mail_address, mail_password), app_name=app_name)
+        mh2 = TlsSMTPHandler(('smtp.gmail.com', 587), mail_address, (mail_address), '⚠️ error found', (mail_address, mail_password), app_name=app_name)
         mh2.setLevel(logging.ERROR)
         mh2.setFormatter(base_formatter)
         logger.addHandler(mh2)
@@ -126,15 +126,18 @@ def main():
     try:
         api = get_api(config['consumer_key'], config['consumer_secret'], config['access_token_key'], config['access_token_secret'])
     except (Exception, tweepy.TweepError) as error:
-        logger.exception("received an error on getting API")
+        logger.exception('received an error on getting API')
         sys.exit(1)
 
+    new_last_id = True
     while True:
         try:
-            tweet_id = get_last_id(api)
+            if new_last_id:
+                tweet_id = get_last_id(api)
+                new_last_id = False
             tweets = sorted(tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
         except (Exception, tweepy.TweepError) as error:
-            logger.exception("received an error on getting search results")
+            logger.exception('received an error on getting search results')
             sys.exit(1)
 
         for tweet in tweets:
@@ -142,12 +145,13 @@ def main():
                 if is_tweet_exists(api, tweet.id):
                     api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
                     logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
+                    new_last_id = True
             except (Exception, tweepy.TweepError) as error:
-                logger.exception("received an error on trying to reply")
+                logger.exception('received an error on trying to reply')
                 sys.exit(1)
 
         time.sleep(600)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
