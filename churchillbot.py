@@ -96,7 +96,7 @@ def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
     
     if not len(last_tweets):
-        return '1119952223906217984'
+        return '1119999999999999999'
 
     while len(last_tweets):
         last_tweet = last_tweets[0]
@@ -143,8 +143,9 @@ def main():
         for tweet in tweets:
             try:
                 if is_tweet_exists(api, tweet.id):
-                    api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
-                    logger.info(f'replied to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}')
+                    reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
+                    logger.info(f'''new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\n
+to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}''')
                     new_last_id = True
             except (Exception, tweepy.TweepError) as error:
                 logger.exception('received an error on trying to reply')
