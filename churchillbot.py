@@ -144,8 +144,7 @@ def main():
             try:
                 if is_tweet_exists(api, tweet.id):
                     reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
-                    logger.info(f'''new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\n
-to https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}''')
+                    logger.info(f'new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\nto https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}')
                     new_last_id = True
             except (Exception, tweepy.TweepError) as error:
                 logger.exception('received an error on trying to reply')
