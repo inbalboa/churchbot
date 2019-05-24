@@ -22,8 +22,7 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
             if not port:
                 port = smtplib.SMTP_PORT
             smtp = smtplib.SMTP(self.mailhost, port)
-            msg = self.format(record)
-            msg = f'Content-Type: text/html;charset=utf-8\nFrom: {self.fromaddr}\nTo: {",".join(self.toaddrs)}\nSubject: {self.app_name}: {self.getSubject(record)}\nDate: {formatdate()}\n\n{msg}'
+            msg = f'Content-Type: text/plain;charset=utf-8\nFrom: {self.fromaddr}\nTo: {",".join(self.toaddrs)}\nSubject: {self.app_name}: {self.getSubject(record)}\nDate: {formatdate()}\n\n{self.format(record)}'
 
             if self.username:
                 smtp.ehlo()
