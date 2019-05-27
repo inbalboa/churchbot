@@ -51,7 +51,9 @@ def read_config() -> dict:
         'status_text': os.environ.get('status_text'),
     
         'mail_address': os.environ.get('mail_address'),
-        'mail_password': os.environ.get('mail_password')
+        'mail_password': os.environ.get('mail_password'),
+
+        'delay': int(os.environ.get('delay', 600))
     }
     
     return config
@@ -150,7 +152,7 @@ def main():
                 logger.exception('received an error on trying to reply')
                 sys.exit(1)
 
-        time.sleep(600)
+        time.sleep(config['delay'])
 
 
 if __name__ == '__main__':

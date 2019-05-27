@@ -4,9 +4,9 @@ A simple Twitter bot to find tweets that match your search terms and reply with 
 
 Developed for joking. Don't spam!
 
-Prepared for Heroku using.
+Heroku ready.
 
-Environment variables you must define:
+Environment variables you have to define:
 - `access_token_key`
 - `access_token_secret`
 - `consumer_key`
@@ -19,3 +19,4 @@ Optional part:
 - `app_name`
 - `mail_address (currently just gmail)`
 - `mail_password`
+- `delay`
