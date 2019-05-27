@@ -37,21 +37,22 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
             self.handleError(record)
 
 def read_config() -> dict:
-    config = dict()
+    app_name = os.environ.get('app_name', '.'.join(sys.argv[0].split('.')[:-1]))
+    config = {
+        'app_name': app_name,
+        'app_fullname': os.environ.get('app_fullname', app_name),
     
-    config['app_name'] = os.environ.get('app_name', sys.argv[0])
-    config['app_fullname'] = os.environ.get('app_fullname', config['app_name'])
+        'consumer_key': os.environ.get('consumer_key'),
+        'consumer_secret': os.environ.get('consumer_secret'),
+        'access_token_key': os.environ.get('access_token_key'),
+        'access_token_secret': os.environ.get('access_token_secret'),
     
-    config['consumer_key'] = os.environ.get('consumer_key', None)
-    config['consumer_secret'] = os.environ.get('consumer_secret', None)
-    config['access_token_key'] = os.environ.get('access_token_key', None)
-    config['access_token_secret'] = os.environ.get('access_token_secret', None)
+        'search_query': os.environ.get('search_query'),
+        'status_text': os.environ.get('status_text'),
     
-    config['search_query'] = os.environ.get('search_query', None)
-    config['status_text'] = os.environ.get('status_text', None)
-    
-    config['mail_address'] = os.environ.get('mail_address', None)
-    config['mail_password'] = os.environ.get('mail_password', None)
+        'mail_address': os.environ.get('mail_address'),
+        'mail_password': os.environ.get('mail_password')
+    }
     
     return config
 
@@ -94,10 +95,10 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
 def get_last_id(api) -> str:
     last_tweets = api.home_timeline(count=1)
     
-    if not len(last_tweets):
+    if not last_tweets:
         return '1119999999999999999'
 
-    while len(last_tweets):
+    while last_tweets:
         last_tweet = last_tweets[0]
         in_reply_id = last_tweet.in_reply_to_status_id_str
         if in_reply_id:
@@ -111,7 +112,7 @@ def check_phrase(phrase: str) -> bool:
     # TODO: smart checking
     return True
 
-def is_tweet_exists(api: tweepy.API, tweet_id: int) -> bool:
+def tweet_exists(api: tweepy.API, tweet_id: int) -> bool:
     try:
         tweet = api.get_status(tweet_id)
         return True
@@ -134,14 +135,14 @@ def main():
             if new_last_id:
                 tweet_id = get_last_id(api)
                 new_last_id = False
-            tweets = sorted(tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=tweet_id).items(), key=lambda x: x.id_str)
+            tweets = tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=tweet_id)
         except (Exception, tweepy.TweepError) as error:
             logger.exception('received an error on getting search results')
             sys.exit(1)
 
-        for tweet in tweets:
+        for tweet in sorted(tweets.items(), key = lambda x: x.id_str):
             try:
-                if is_tweet_exists(api, tweet.id):
+                if tweet_exists(api, tweet.id):
                     reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
                     logger.info(f'new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\nto https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}')
                     new_last_id = True
