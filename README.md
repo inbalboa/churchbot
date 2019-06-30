@@ -1,4 +1,5 @@
 # Churchill bot
+[![Build Status](https://travis-ci.org/inbalboa/churchbot.svg?branch=master)](https://travis-ci.org/inbalboa/churchbot)
 
 A simple Twitter bot to find tweets that match your search terms and reply with prepared response.
 
