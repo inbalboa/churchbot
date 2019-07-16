@@ -10,44 +10,38 @@
     "repository": "https://github.com/inbalboa/churchbot",
     "env": {
       "access_token_key": {
-        "description": "Access token key.",
-        "required": "true"
+        "description": "Access token key."
       },
       "access_token_secret": {
-        "description": "Access token secret.",
-        "required": "true"
+        "description": "Access token secret."
       },
       "consumer_key": {
-        "description": "Consumer key.",
-        "required": "true"
+        "description": "Consumer key."
       },
       "consumer_secret": {
-        "description": "Consumer secret.",
-        "required": "true"
+        "description": "Consumer secret."
       },
       "search_query": {
-        "description": "Search query.",
-        "required": "true"
+        "description": "Search query."
       },
       "status_text": {
-        "description": "Status text.",
-        "required": "true"
+        "description": "Status text."
       },
       "app_fullname": {
         "description": "Application full name.",
-        "required": "false"
+        "required": false
       },
       "app_name": {
         "description": "Application short name.",
-        "required": "false"
+        "required": false
       },
       "mail_address": {
         "description": "Gmail address.",
-        "required": "false"
+        "required": false
       },
       "mail_password": {
         "description": "Gmail password.",
-        "required": "false"
+        "required": false
       },
       "delay": {
         "description": "Poll time in sec.",
