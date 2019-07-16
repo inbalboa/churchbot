@@ -11,25 +11,27 @@
     "env": {
       "access_token_key": {
         "description": "Access token key.",
-        "generator": "secret"
+        "required": "true"
       },
       "access_token_secret": {
         "description": "Access token secret.",
-        "generator": "secret"
+        "required": "true"
       },
       "consumer_key": {
         "description": "Consumer key.",
-        "generator": "secret"
+        "required": "true"
       },
       "consumer_secret": {
         "description": "Consumer secret.",
-        "generator": "secret"
+        "required": "true"
       },
       "search_query": {
-        "description": "Search query."
+        "description": "Search query.",
+        "required": "true"
       },
       "status_text": {
-        "description": "Status text."
+        "description": "Status text.",
+        "required": "true"
       },
       "app_fullname": {
         "description": "Application full name.",
@@ -45,8 +47,7 @@
       },
       "mail_password": {
         "description": "Gmail password.",
-        "required": "false",		
-        "generator": "secret"
+        "required": "false"
       },
       "delay": {
         "description": "Poll time in sec.",
