@@ -5,8 +5,6 @@ A simple Twitter bot to find tweets that match your search terms and reply with 
 
 Developed for joking. Don't spam!
 
-Heroku ready.
-
 Environment variables you have to define:
 - `access_token_key`
 - `access_token_secret`
@@ -21,3 +19,8 @@ Optional part:
 - `mail_address (currently just gmail)`
 - `mail_password`
 - `delay`
+
+
+You can host it on [Heroku](https://www.heroku.com) for free ([account verification required](https://devcenter.heroku.com/articles/account-verification)).
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

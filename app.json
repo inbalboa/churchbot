@@ -1,0 +1,67 @@
+{
+    "name": "Churchill Twitter bot",
+    "description": "A simple Twitter bot that searches tweets that match your search terms and replies with a prepared response.",
+    "keywords": [
+      "twitter",
+      "bot",
+      "heroku"
+    ],
+    "website": "https://github.com/inbalboa/churchbot",
+    "repository": "https://github.com/inbalboa/churchbot",
+    "env": {
+      "access_token_key": {
+        "description": "Access token key.",
+        "generator": "secret"
+      },
+      "access_token_secret": {
+        "description": "Access token secret.",
+        "generator": "secret"
+      },
+      "consumer_key": {
+        "description": "Consumer key.",
+        "generator": "secret"
+      },
+      "consumer_secret": {
+        "description": "Consumer secret.",
+        "generator": "secret"
+      },
+      "search_query": {
+        "description": "Search query."
+      },
+      "status_text": {
+        "description": "Status text."
+      },
+      "app_fullname": {
+        "description": "Application full name.",
+        "required": "false"
+      },
+      "app_name": {
+        "description": "Application short name.",
+        "required": "false"
+      },
+      "mail_address": {
+        "description": "Gmail address.",
+        "required": "false"
+      },
+      "mail_password": {
+        "description": "Gmail password.",
+        "required": "false",		
+        "generator": "secret"
+      },
+      "delay": {
+        "description": "Poll time in sec.",
+        "value": "600"
+      }
+    },
+    "formation": {
+      "worker": {
+        "quantity": 1,
+        "size": "free"
+      }
+    },
+    "buildpacks": [
+      {
+        "url": "heroku/python"
+      }
+    ]
+  }
