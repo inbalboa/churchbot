@@ -10,7 +10,7 @@ import tweepy
 
 class TlsSMTPHandler(logging.handlers.SMTPHandler):
     def __init__(self, *args, app_name: str = None, **kwargs):
-        super(TlsSMTPHandler, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.app_name = app_name
 
     def emit(self, record):
