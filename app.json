@@ -42,10 +42,6 @@
       "mail_password": {
         "description": "Gmail password.",
         "required": false
-      },
-      "delay": {
-        "description": "Poll time in sec.",
-        "value": "600"
       }
     },
     "formation": {
@@ -54,6 +50,9 @@
         "size": "free"
       }
     },
+    "addons": [
+    	"scheduler"
+  	],
     "buildpacks": [
       {
         "url": "heroku/python"

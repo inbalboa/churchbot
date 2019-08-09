@@ -2,6 +2,7 @@
 
 import logging
 import logging.handlers
+import operator
 import os
 import sys
 import time
@@ -51,11 +52,9 @@ def read_config() -> dict:
         'status_text': os.environ.get('status_text'),
     
         'mail_address': os.environ.get('mail_address'),
-        'mail_password': os.environ.get('mail_password'),
-
-        'delay': int(os.environ.get('delay', 600))
+        'mail_password': os.environ.get('mail_password')
     }
-    
+
     return config
 
 def get_logger(log_path: str = None, mail_address: str = None, mail_password: str = None, app_name: str = None) -> logging.Logger:
@@ -116,43 +115,22 @@ def check_phrase(phrase: str) -> bool:
 
 def tweet_exists(api: tweepy.API, tweet_id: int) -> bool:
     try:
-        tweet = api.get_status(tweet_id)
+        api.get_status(tweet_id)
         return True
-    except (Exception, tweepy.TweepError) as error:
+    except:
         return False
 
 def main():
     config = read_config()    
     logger = get_logger(mail_address=config['mail_address'], mail_password=config['mail_password'], app_name=config['app_fullname'])
 
-    try:
-        api = get_api(config['consumer_key'], config['consumer_secret'], config['access_token_key'], config['access_token_secret'])
-    except (Exception, tweepy.TweepError) as error:
-        logger.exception('received an error on getting API')
-        sys.exit(1)
-
-    new_last_id = True
-    while True:
-        try:
-            if new_last_id:
-                tweet_id = get_last_id(api)
-                new_last_id = False
-            tweets = tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=tweet_id)
-        except (Exception, tweepy.TweepError) as error:
-            logger.exception('received an error on getting search results')
-            sys.exit(1)
-
-        for tweet in sorted(tweets.items(), key = lambda x: x.id_str):
-            try:
-                if tweet_exists(api, tweet.id):
-                    reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
-                    logger.info(f'new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\nto https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}')
-                    new_last_id = True
-            except (Exception, tweepy.TweepError) as error:
-                logger.exception('received an error on trying to reply')
-                sys.exit(1)
-
-        time.sleep(config['delay'])
+    api = get_api(config['consumer_key'], config['consumer_secret'], config['access_token_key'], config['access_token_secret'])
+    last_tweet_id = get_last_id(api)
+    tweets = tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=last_tweet_id)
+    for tweet in sorted(tweets.items(), key=operator.attrgetter('id_str')):
+        if tweet_exists(api, tweet.id):
+            reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
+            logger.info(f'new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\nto https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}')
 
 
 if __name__ == '__main__':
