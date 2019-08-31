@@ -94,8 +94,8 @@ def get_api(consumer_key: str, consumer_secret: str, access_token: str, access_t
     return tweepy.API(auth, wait_on_rate_limit=True)
 
 def get_last_id(api) -> str:
-    last_tweets = api.home_timeline(count=1)
-    
+    last_tweets = api.user_timeline(screen_name=api.me().screen_name, count=1)
+
     if not last_tweets:
         return '1119999999999999999'
 
