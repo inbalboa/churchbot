@@ -18,7 +18,7 @@ class TlsSMTPHandler(logging.handlers.SMTPHandler):
         try:
             import smtplib
             from email.utils import formatdate
-            
+
             port = self.mailport
             if not port:
                 port = smtplib.SMTP_PORT
@@ -42,15 +42,15 @@ def read_config() -> dict:
     config = {
         'app_name': app_name,
         'app_fullname': os.environ.get('app_fullname', app_name),
-    
+
         'consumer_key': os.environ.get('consumer_key'),
         'consumer_secret': os.environ.get('consumer_secret'),
         'access_token_key': os.environ.get('access_token_key'),
         'access_token_secret': os.environ.get('access_token_secret'),
-    
+
         'search_query': os.environ.get('search_query'),
-        'status_text': os.environ.get('status_text'),
-    
+        'status_text': literal_eval(os.environ.get('status_text')),
+
         'mail_address': os.environ.get('mail_address'),
         'mail_password': os.environ.get('mail_password')
     }
@@ -60,14 +60,14 @@ def read_config() -> dict:
 def get_logger(log_path: str = None, mail_address: str = None, mail_password: str = None, app_name: str = None) -> logging.Logger:
     logger = logging.getLogger(app_name)
     logger.setLevel(logging.DEBUG)
-    
+
     base_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
+
     sh = logging.StreamHandler(sys.stdout)
     sh.setLevel(logging.DEBUG)
     sh.setFormatter(base_formatter)
     logger.addHandler(sh)
-    
+
     if log_path:
         fh = logging.FileHandler(log_path)
         fh.setLevel(logging.INFO)
@@ -121,17 +121,19 @@ def tweet_exists(api: tweepy.API, tweet_id: int) -> bool:
         return False
 
 def main():
-    config = read_config()    
+    config = read_config()
     logger = get_logger(mail_address=config['mail_address'], mail_password=config['mail_password'], app_name=config['app_fullname'])
 
     api = get_api(config['consumer_key'], config['consumer_secret'], config['access_token_key'], config['access_token_secret'])
     last_tweet_id = get_last_id(api)
     tweets = tweepy.Cursor(api.search, q=f'{config["search_query"]} -filter:retweets', tweet_mode='extended', since_id=last_tweet_id)
     for tweet in sorted(tweets.items(), key=operator.attrgetter('id_str')):
-        if tweet_exists(api, tweet.id):
-            reply = api.update_status(f'@{tweet.author.screen_name} {config["status_text"]}', in_reply_to_status_id=tweet.id_str)
+        status_text = config['status_text'].get(tweet.lang)
+        if status_text and tweet_exists(api, tweet.id):
+            reply = api.update_status(f'@{tweet.author.screen_name} {status_text}', in_reply_to_status_id=tweet.id_str)
             logger.info(f'new reply https://twitter.com/{reply.author.screen_name}/status/{reply.id_str}\n{reply.text}\n\nto https://twitter.com/{tweet.author.screen_name}/status/{tweet.id_str}\n{tweet.full_text}')
 
 
 if __name__ == '__main__':
     main()
+
