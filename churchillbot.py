@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
 
+#############################################
+######## ENV vars you have to define ########
+# access_token_key=
+# access_token_secret=
+# app_fullname=Churchill bot
+# app_name=churchillbot
+# consumer_key=
+# consumer_secret=
+# mail_address=
+# mail_password=
+# search_query=як+казав+Черчилль OR як+казав+Черчілль OR як+говорив+Черчилль OR як+говорив+Черчілль OR як+казав+Черчиль OR як+казав+Черчіль OR як+говорив+Черчиль OR як+говорив+Черчіль
+# status_text={'uk': 'Я такої хуйні не казав!'}
+#############################################
+
 from ast import literal_eval
 import logging
 import logging.handlers
